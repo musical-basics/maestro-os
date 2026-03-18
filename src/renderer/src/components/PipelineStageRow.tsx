@@ -1,4 +1,5 @@
 import type { PipelineStage, ProjectAsset } from '../../../shared/types'
+import { StageDropzone } from './StageDropzone'
 
 type StageStatus = 'completed' | 'active' | 'locked'
 
@@ -6,14 +7,20 @@ interface PipelineStageRowProps {
   stage: PipelineStage
   status: StageStatus
   asset: ProjectAsset | null
+  projectId: string
   onOpenFile?: (filePath: string) => void
+  onStageAdvanced?: () => void
+  onMarkComplete?: (stageId: number) => void
 }
 
 export function PipelineStageRow({
   stage,
   status,
   asset,
-  onOpenFile
+  projectId,
+  onOpenFile,
+  onStageAdvanced,
+  onMarkComplete
 }: PipelineStageRowProps): React.JSX.Element {
   const statusIcon = {
     completed: '✅',
@@ -22,6 +29,7 @@ export function PipelineStageRow({
   }[status]
 
   const isConceptual = stage.gateRequirement === null
+  const isFileGated = stage.gateRequirement !== null
 
   return (
     <div className={`stage-row stage-row--${status}`}>
@@ -36,20 +44,31 @@ export function PipelineStageRow({
           <h4 className="stage-row__name">{stage.stageName}</h4>
         </div>
 
-        {status === 'active' && (
-          <div className="stage-row__gate">
-            {isConceptual ? (
-              <span className="stage-row__gate-text">
-                Conceptual — click "Mark as Complete" when done
-              </span>
-            ) : (
-              <span className="stage-row__gate-text">
-                Drop a <code>{stage.gateRequirement}</code> file here to unlock
-              </span>
-            )}
+        {/* Active stage: Show either dropzone or mark-as-complete */}
+        {status === 'active' && isFileGated && (
+          <StageDropzone
+            stageId={stage.id}
+            gateRequirement={stage.gateRequirement!}
+            projectId={projectId}
+            onAssetLinked={() => onStageAdvanced?.()}
+          />
+        )}
+
+        {status === 'active' && isConceptual && (
+          <div className="stage-row__conceptual">
+            <p className="stage-row__gate-text">
+              This is a conceptual stage — mark as complete when you're done.
+            </p>
+            <button
+              className="btn btn--primary btn--sm"
+              onClick={() => onMarkComplete?.(stage.id)}
+            >
+              ✓ Mark as Complete
+            </button>
           </div>
         )}
 
+        {/* Completed stage: Show linked asset */}
         {status === 'completed' && asset && (
           <div className="stage-row__asset">
             <span className="stage-row__asset-name">{asset.filePath.split('/').pop()}</span>
@@ -64,6 +83,8 @@ export function PipelineStageRow({
             )}
           </div>
         )}
+
+        {/* Locked stage: Show nothing extra */}
       </div>
     </div>
   )
