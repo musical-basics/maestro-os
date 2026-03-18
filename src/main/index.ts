@@ -8,6 +8,12 @@ import { initializeSchema } from './database/schema'
 import { seedPipelineStages } from './database/seed'
 import { closeDatabase } from './database/connection'
 import * as dao from './database/dao'
+import {
+  startProjectWatchers,
+  stopProjectWatchers,
+  addProjectToWatcher,
+  removeProjectFromWatcher
+} from './watchers/projectWatcher'
 import type { CreateSnippetData, LinkAssetData } from '../shared/types'
 
 function createWindow(): void {
@@ -75,7 +81,9 @@ ipcMain.handle('project:getById', async (_event, id: string) => {
 ipcMain.handle(
   'project:create',
   async (_event, data: { title: string; masterDirectory: string; snippetIds: string[] }) => {
-    return dao.createProject(data.title, data.masterDirectory, data.snippetIds)
+    const project = dao.createProject(data.title, data.masterDirectory, data.snippetIds)
+    addProjectToWatcher(data.masterDirectory)
+    return project
   }
 )
 ipcMain.handle('project:updateStage', async (_event, id: string, stageId: number) => {
@@ -86,7 +94,9 @@ ipcMain.handle('project:updateStage', async (_event, id: string, stageId: number
   })
 })
 ipcMain.handle('project:delete', async (_event, id: string) => {
+  const project = dao.getProjectById(id)
   dao.deleteProject(id)
+  if (project) removeProjectFromWatcher(project.masterDirectory)
 })
 
 // Asset Handlers
@@ -128,6 +138,9 @@ app.whenReady().then(() => {
   initializeSchema()
   seedPipelineStages()
 
+  // Start watching all project directories for changes
+  startProjectWatchers()
+
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -146,5 +159,6 @@ app.on('window-all-closed', () => {
 })
 
 app.on('will-quit', () => {
+  stopProjectWatchers()
   closeDatabase()
 })
