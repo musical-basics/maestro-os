@@ -655,3 +655,218 @@ body {
   padding: 12px 20px;
   border-top: 1px solid var(--color-border-subtle);
 }
+
+/* ─── Project Grid ─────────────────────────────────────── */
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+/* ─── Project Card ─────────────────────────────────────── */
+
+.project-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.project-card:hover {
+  border-color: var(--color-border);
+  transform: translateY(-1px);
+}
+
+.project-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.project-card__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.project-card__time {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.project-card__stage {
+  margin-bottom: 10px;
+}
+
+.project-card__progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ─── Progress Bar ─────────────────────────────────────── */
+
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--color-bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transition: width var(--transition-normal);
+}
+
+.progress-bar__label {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  width: 32px;
+  text-align: right;
+}
+
+/* ─── Project Detail View ──────────────────────────────── */
+
+.project-detail__nav {
+  margin-bottom: 1rem;
+}
+
+.project-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.project-detail__header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.project-detail__subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.project-detail__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ─── Pipeline Timeline ───────────────────────────────── */
+
+.pipeline-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.stage-row {
+  display: flex;
+  gap: 16px;
+  min-height: 56px;
+}
+
+.stage-row__indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.stage-row__icon {
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stage-row__line {
+  width: 2px;
+  flex: 1;
+  background: var(--color-accent);
+  min-height: 16px;
+}
+
+.stage-row__line--dimmed {
+  background: var(--color-border);
+}
+
+.stage-row:last-child .stage-row__line {
+  display: none;
+}
+
+.stage-row__content {
+  flex: 1;
+  padding-bottom: 16px;
+}
+
+.stage-row__header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.stage-row__number {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.stage-row__name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.stage-row--locked .stage-row__name {
+  color: var(--color-text-tertiary);
+}
+
+.stage-row--active .stage-row__name {
+  color: var(--color-accent);
+}
+
+.stage-row__gate {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.stage-row__gate code {
+  font-family: var(--font-mono);
+  background: var(--color-bg-primary);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+.stage-row__asset {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.stage-row__asset-name {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+}
+
