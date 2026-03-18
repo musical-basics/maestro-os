@@ -112,9 +112,10 @@ ipcMain.handle('stage:getAll', async () => {
   return dao.getAllStages()
 })
 
-// Dashboard (Phase 8 — stub for now, will be replaced)
+// Dashboard
 ipcMain.handle('dashboard:getProjectStates', async () => {
-  return []
+  const { getProjectStates } = await import('./database/dashboard')
+  return getProjectStates()
 })
 
 // File System Handlers
