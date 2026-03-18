@@ -321,3 +321,220 @@ body {
   color: var(--color-text-secondary);
   font-size: 14px;
 }
+
+/* ─── View Header Row ──────────────────────────────────── */
+
+.view-header__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.view-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.selection-count {
+  font-size: 13px;
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ─── Small Buttons ────────────────────────────────────── */
+
+.btn--sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn--icon {
+  padding: 4px 6px;
+  font-size: 14px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── DropZone ─────────────────────────────────────────── */
+
+.dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  transition: border-color var(--transition-normal), background var(--transition-normal);
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  border-color: var(--color-text-tertiary);
+}
+
+.dropzone--active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-muted);
+}
+
+.dropzone__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dropzone__icon {
+  font-size: 32px;
+  opacity: 0.5;
+}
+
+.dropzone__text {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.dropzone__hint {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+}
+
+/* ─── Snippet Grid ─────────────────────────────────────── */
+
+.snippet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+/* ─── Snippet Card ─────────────────────────────────────── */
+
+.snippet-card {
+  display: flex;
+  gap: 10px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.snippet-card:hover {
+  border-color: var(--color-border);
+}
+
+.snippet-card--selected {
+  border-color: var(--color-accent);
+  background: var(--color-accent-muted);
+}
+
+.snippet-card__select {
+  flex-shrink: 0;
+  padding-top: 2px;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: white;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.checkbox--checked {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.snippet-card__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.snippet-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.snippet-card__title {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.snippet-card__actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.snippet-card__badges {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.snippet-card__path {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Snippet Card Edit Mode ───────────────────────────── */
+
+.snippet-card__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.snippet-card__edit-row {
+  display: flex;
+  gap: 6px;
+}
+
+.snippet-card__input {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.snippet-card__input:focus {
+  border-color: var(--color-accent);
+}
+
+.snippet-card__input--sm {
+  flex: 1;
+  min-width: 0;
+}
+
+.snippet-card__edit-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
