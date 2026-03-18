@@ -1,9 +1,14 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import os from 'os'
-import fs from 'fs'
+import * as os from 'os'
+import * as fs from 'fs'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { initializeSchema } from './database/schema'
+import { seedPipelineStages } from './database/seed'
+import { closeDatabase } from './database/connection'
+import * as dao from './database/dao'
+import type { CreateSnippetData, LinkAssetData } from '../shared/types'
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -17,7 +22,7 @@ function createWindow(): void {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false // Required for better-sqlite3 native module
+      sandbox: false
     }
   })
 
@@ -39,55 +44,66 @@ function createWindow(): void {
 
 // ─── IPC Handlers ─────────────────────────────────────────
 
-// Snippet Handlers (Phase 3)
+// Snippet Handlers
 ipcMain.handle('snippet:getAll', async () => {
-  /* TODO Phase 3 */
-  return []
+  return dao.getAllSnippets()
 })
-ipcMain.handle('snippet:create', async (_event, _data) => {
-  /* TODO Phase 3 */
-  return null
+ipcMain.handle('snippet:create', async (_event, data: CreateSnippetData) => {
+  return dao.createSnippet(data)
 })
-ipcMain.handle('snippet:delete', async (_event, _id: string) => {
-  /* TODO Phase 3 */
+ipcMain.handle(
+  'snippet:update',
+  async (
+    _event,
+    id: string,
+    data: { title?: string; keySignature?: string | null; bpm?: number | null; mood?: string | null }
+  ) => {
+    return dao.updateSnippet(id, data)
+  }
+)
+ipcMain.handle('snippet:delete', async (_event, id: string) => {
+  dao.deleteSnippet(id)
 })
 
-// Project Handlers (Phase 4–5)
+// Project Handlers
 ipcMain.handle('project:getAll', async () => {
-  /* TODO Phase 4 */
-  return []
+  return dao.getAllProjects()
 })
-ipcMain.handle('project:getById', async (_event, _id: string) => {
-  /* TODO Phase 4 */
-  return null
+ipcMain.handle('project:getById', async (_event, id: string) => {
+  return dao.getProjectById(id)
 })
-ipcMain.handle('project:create', async (_event, _data) => {
-  /* TODO Phase 4 */
-  return null
+ipcMain.handle(
+  'project:create',
+  async (_event, data: { title: string; masterDirectory: string; snippetIds: string[] }) => {
+    return dao.createProject(data.title, data.masterDirectory, data.snippetIds)
+  }
+)
+ipcMain.handle('project:updateStage', async (_event, id: string, stageId: number) => {
+  dao.updateProjectStage(id, stageId)
+  // Notify all renderer windows about the stage change
+  BrowserWindow.getAllWindows().forEach((win) => {
+    win.webContents.send('project:stageChanged', { projectId: id, newStageId: stageId })
+  })
 })
-ipcMain.handle('project:updateStage', async (_event, _id: string, _stageId: number) => {
-  /* TODO Phase 6 */
-})
-
-// Asset Handlers (Phase 6)
-ipcMain.handle('asset:link', async (_event, _data) => {
-  /* TODO Phase 6 */
-  return null
-})
-ipcMain.handle('asset:getByProject', async (_event, _projectId: string) => {
-  /* TODO Phase 6 */
-  return []
+ipcMain.handle('project:delete', async (_event, id: string) => {
+  dao.deleteProject(id)
 })
 
-// Pipeline Stages (Phase 5)
+// Asset Handlers
+ipcMain.handle('asset:link', async (_event, data: LinkAssetData) => {
+  return dao.linkAsset(data)
+})
+ipcMain.handle('asset:getByProject', async (_event, projectId: string) => {
+  return dao.getAssetsByProject(projectId)
+})
+
+// Pipeline Stages
 ipcMain.handle('stage:getAll', async () => {
-  /* TODO Phase 5 */
-  return []
+  return dao.getAllStages()
 })
 
-// Dashboard (Phase 8)
+// Dashboard (Phase 8 — stub for now, will be replaced)
 ipcMain.handle('dashboard:getProjectStates', async () => {
-  /* TODO Phase 8 */
   return []
 })
 
@@ -108,6 +124,10 @@ ipcMain.handle('fs:getHomeDir', async () => {
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.maestroos.app')
 
+  // Initialize the database schema + seed pipeline stages
+  initializeSchema()
+  seedPipelineStages()
+
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -123,4 +143,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+app.on('will-quit', () => {
+  closeDatabase()
 })

@@ -1,27 +1,52 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
+import type {
+  Snippet,
+  Project,
+  ProjectAsset,
+  PipelineStage,
+  CreateSnippetData,
+  LinkAssetData
+} from '../shared/types'
+
 // MaestroOS API exposed to the renderer via window.api
 const api = {
   // Snippets
-  getSnippets: (): Promise<unknown[]> => ipcRenderer.invoke('snippet:getAll'),
-  createSnippet: (data: unknown): Promise<unknown> => ipcRenderer.invoke('snippet:create', data),
+  getSnippets: (): Promise<Snippet[]> => ipcRenderer.invoke('snippet:getAll'),
+  createSnippet: (data: CreateSnippetData): Promise<Snippet> =>
+    ipcRenderer.invoke('snippet:create', data),
+  updateSnippet: (
+    id: string,
+    data: {
+      title?: string
+      keySignature?: string | null
+      bpm?: number | null
+      mood?: string | null
+    }
+  ): Promise<Snippet | null> => ipcRenderer.invoke('snippet:update', id, data),
   deleteSnippet: (id: string): Promise<void> => ipcRenderer.invoke('snippet:delete', id),
 
   // Projects
-  getProjects: (): Promise<unknown[]> => ipcRenderer.invoke('project:getAll'),
-  getProject: (id: string): Promise<unknown> => ipcRenderer.invoke('project:getById', id),
-  createProject: (data: unknown): Promise<unknown> => ipcRenderer.invoke('project:create', data),
+  getProjects: (): Promise<Project[]> => ipcRenderer.invoke('project:getAll'),
+  getProject: (id: string): Promise<Project | null> => ipcRenderer.invoke('project:getById', id),
+  createProject: (data: {
+    title: string
+    masterDirectory: string
+    snippetIds: string[]
+  }): Promise<Project> => ipcRenderer.invoke('project:create', data),
   updateProjectStage: (id: string, stageId: number): Promise<void> =>
     ipcRenderer.invoke('project:updateStage', id, stageId),
+  deleteProject: (id: string): Promise<void> => ipcRenderer.invoke('project:delete', id),
 
   // Assets
-  linkAsset: (data: unknown): Promise<unknown> => ipcRenderer.invoke('asset:link', data),
-  getProjectAssets: (projectId: string): Promise<unknown[]> =>
+  linkAsset: (data: LinkAssetData): Promise<ProjectAsset> =>
+    ipcRenderer.invoke('asset:link', data),
+  getProjectAssets: (projectId: string): Promise<ProjectAsset[]> =>
     ipcRenderer.invoke('asset:getByProject', projectId),
 
   // Pipeline Stages
-  getStages: (): Promise<unknown[]> => ipcRenderer.invoke('stage:getAll'),
+  getStages: (): Promise<PipelineStage[]> => ipcRenderer.invoke('stage:getAll'),
 
   // Dashboard
   getProjectStates: (): Promise<unknown[]> => ipcRenderer.invoke('dashboard:getProjectStates'),

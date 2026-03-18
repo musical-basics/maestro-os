@@ -1,23 +1,45 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
+import type {
+  Snippet,
+  Project,
+  ProjectAsset,
+  PipelineStage,
+  CreateSnippetData,
+  LinkAssetData
+} from '../shared/types'
 
 interface MaestroAPI {
   // Snippets
-  getSnippets: () => Promise<unknown[]>
-  createSnippet: (data: unknown) => Promise<unknown>
+  getSnippets: () => Promise<Snippet[]>
+  createSnippet: (data: CreateSnippetData) => Promise<Snippet>
+  updateSnippet: (
+    id: string,
+    data: {
+      title?: string
+      keySignature?: string | null
+      bpm?: number | null
+      mood?: string | null
+    }
+  ) => Promise<Snippet | null>
   deleteSnippet: (id: string) => Promise<void>
 
   // Projects
-  getProjects: () => Promise<unknown[]>
-  getProject: (id: string) => Promise<unknown>
-  createProject: (data: unknown) => Promise<unknown>
+  getProjects: () => Promise<Project[]>
+  getProject: (id: string) => Promise<Project | null>
+  createProject: (data: {
+    title: string
+    masterDirectory: string
+    snippetIds: string[]
+  }) => Promise<Project>
   updateProjectStage: (id: string, stageId: number) => Promise<void>
+  deleteProject: (id: string) => Promise<void>
 
   // Assets
-  linkAsset: (data: unknown) => Promise<unknown>
-  getProjectAssets: (projectId: string) => Promise<unknown[]>
+  linkAsset: (data: LinkAssetData) => Promise<ProjectAsset>
+  getProjectAssets: (projectId: string) => Promise<ProjectAsset[]>
 
   // Pipeline Stages
-  getStages: () => Promise<unknown[]>
+  getStages: () => Promise<PipelineStage[]>
 
   // Dashboard
   getProjectStates: () => Promise<unknown[]>
