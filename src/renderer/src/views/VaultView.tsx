@@ -1,13 +1,15 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { useVaultStore } from '../stores/useVaultStore'
 import { DropZone, getExtension } from '../components/DropZone'
 import { SnippetCard } from '../components/SnippetCard'
+import { MergeProjectModal } from '../components/MergeProjectModal'
 import type { CreateSnippetData } from '../../../shared/types'
 
 export function VaultView(): React.JSX.Element {
   const { snippets, selectedIds, isLoading, fetchSnippets, toggleSelect, clearSelection, selectAll } =
     useVaultStore()
   const addSnippet = useVaultStore((s) => s.addSnippet)
+  const [showMergeModal, setShowMergeModal] = useState(false)
 
   useEffect(() => {
     fetchSnippets()
@@ -51,6 +53,9 @@ export function VaultView(): React.JSX.Element {
               {hasSelection ? (
                 <>
                   <span className="selection-count">{selectedIds.size} selected</span>
+                  <button className="btn btn--primary btn--sm" onClick={() => setShowMergeModal(true)}>
+                    Merge to Project →
+                  </button>
                   <button className="btn btn--ghost btn--sm" onClick={clearSelection}>
                     Clear
                   </button>
@@ -89,6 +94,8 @@ export function VaultView(): React.JSX.Element {
           ))}
         </div>
       )}
+
+      <MergeProjectModal isOpen={showMergeModal} onClose={() => setShowMergeModal(false)} />
     </div>
   )
 }
